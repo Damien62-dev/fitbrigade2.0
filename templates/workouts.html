@@ -16,8 +16,8 @@
         <h3>{{ workout.name }}</h3>
         <p class="date">{{ workout.date }}</p>
         <div class="muscle-tags">
-            {% for muscle in workout.muscle_groups %}
-            <span class="tag">{{ muscle }}</span>
+            {% for link in workout.workout_muscle_groups %}
+            <span class="tag">{{ link.muscle_group.name }}</span>
             {% endfor %}
         </div>
         <div class="card-actions">

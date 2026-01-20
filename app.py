@@ -203,10 +203,15 @@ def workout_detail(workout_id):
         muscle_name = we.exercise.muscle_group.name
         if muscle_name not in exercises_by_muscle:
             exercises_by_muscle[muscle_name] = []
-        exercises_by_muscle[muscle_name].append(we)
+        exercises_by_muscle[muscle_name].append({
+            'name': we.exercise.name,
+            'sets': we.sets,
+            'reps': we.reps
+        })
     
     return render_template('workout_detail.html', 
-                         workout=workout, 
+                         workout=workout,
+                         muscle_groups=muscle_groups,
                          exercises_by_muscle=exercises_by_muscle)
 
 
@@ -241,32 +246,31 @@ def create_goal_form():
 def create_goal():
     user = get_demo_user()
     
-    # Get form data
     name = request.form['name'].strip()
-    deadline_str = request.form.get('deadline', '').strip()  # CHANGÉ: utilise get() au lieu de ['deadline']
-    exercise_id = request.form['exercise']
+    deadline_str = request.form.get('deadline', '').strip()
+    exercise_id = request.form.get('exercise', '').strip()  # ← Peut être vide
     target_weight = request.form.get('target_weight', '').strip()
     target_reps = request.form.get('target_reps', '').strip()
     notes = request.form.get('notes', '').strip()
     
-    # Minimal validation
-    if name == "" or exercise_id == "":  # CHANGÉ: enlevé la vérification de deadline_str
-        return "Please fill in all required fields.", 400
+    # Validation minimale
+    if name == "" or notes == "":
+        return "Please fill in goal name and description.", 400
     
-    # Convert date string to date object (only if provided)
-    deadline = None  # AJOUTÉ: initialise à None
-    if deadline_str != "":  # AJOUTÉ: vérifie si une date a été fournie
+    # Convertir deadline si fourni
+    deadline = None
+    if deadline_str != "":
         deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
     
-    # Create goal
+    # Créer le goal
     goal = Goal(
         user_id=user.id,
         name=name,
-        exercise_id=int(exercise_id),
+        exercise_id=int(exercise_id) if exercise_id else None,  # ← Nullable!
         target_weight=float(target_weight) if target_weight else None,
         target_reps=int(target_reps) if target_reps else None,
-        deadline=deadline,  # deadline peut être None maintenant
-        notes=notes if notes else None
+        deadline=deadline,
+        notes=notes
     )
     
     db.session.add(goal)

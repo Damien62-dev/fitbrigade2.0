@@ -6,48 +6,52 @@
 <a href="/workouts" class="back-link">← Back to Workouts</a>
 <br><br>
 
-{% if workout.exercises %}
-{% for muscle in workout.muscle_groups %}
-<div class="muscle-section">
-    <h4>{{ muscle }}</h4>
-    {% if workout.exercises.get(muscle) %}
-    <table class="exercise-table">
-        <thead>
-            <tr>
-                <th>Exercise</th>
-                <th>Sets</th>
-                <th>Reps</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for exercise in workout.exercises[muscle] %}
-            <tr>
-                <td>{{ exercise.name }}</td>
-                <td>{{ exercise.sets }}</td>
-                <td>{{ exercise.reps }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="no-exercises">No exercises selected</p>
+<div class="detail-card">
+    <h2>{{ workout.name }}</h2>
+    <p class="date">Date: {{ workout.date }}</p>
+    <br>
+
+    {% if exercises_by_muscle %}
+    {% for muscle in muscle_groups %}
+    {% if exercises_by_muscle.get(muscle.name) %}
+    <div class="muscle-section">
+        <h4>{{ muscle.name }}</h4>
+        <table class="exercise-table">
+            <thead>
+                <tr>
+                    <th>Exercise</th>
+                    <th>Sets</th>
+                    <th>Reps</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exercise in exercises_by_muscle[muscle.name] %}
+                <tr>
+                    <td>{{ exercise.name }}</td>
+                    <td>{{ exercise.sets }}</td>
+                    <td>{{ exercise.reps }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% endif %}
-</div>
-{% endfor %}
-{% else %}
-<p>No exercises recorded for this workout</p>
-{% endif %}
+    {% endfor %}
+    {% else %}
+    <p>No exercises recorded for this workout</p>
+    {% endif %}
 
-<br>
+    <br>
 
-{% if workout.notes %}
-<h3>Notes</h3>
-<p class="notes">{{ workout.notes }}</p>
-<br>
-{% endif %}
+    {% if workout.notes %}
+    <h3>Notes</h3>
+    <p class="notes">{{ workout.notes }}</p>
+    <br>
+    {% endif %}
 
-<div class="detail-actions">
-    <a href="/workouts" class="btn-secondary">Back to Workouts</a>
-    <a href="/delete/{{ workout.id }}" class="btn-danger">Delete Workout</a>
+    <div class="detail-actions">
+        <a href="/workouts" class="btn-secondary">Back to Workouts</a>
+        <a href="/delete/{{ workout.id }}" class="btn-danger">Delete Workout</a>
+    </div>
 </div>
 {% endblock %}

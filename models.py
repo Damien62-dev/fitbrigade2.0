@@ -16,51 +16,49 @@ class User(db.Model):
     goals = db.relationship('Goal', back_populates='user')
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'User(id={self.id}, username="{self.username}")'
     
 class Workout(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    duration = db.Column(db.Integer, nullable=True)
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
-    user = db.relationship('User', back_populates='workouts',  )  
+    user = db.relationship('User', back_populates='workouts')  
     workout_muscle_groups = db.relationship('WorkoutMuscleGroup', back_populates='workout')
     workout_exercises = db.relationship('WorkoutExercise', back_populates='workout')
 
     def __repr__(self):
-        return f'<Workout {self.name} on {self.date}>'
+        return f'Workout(id={self.id}, name="{self.name}", date={self.date})'
     
 class MuscleGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
 
     exercises = db.relationship('Exercise', back_populates='muscle_group',  )
     workout_muscle_groups = db.relationship('WorkoutMuscleGroup', back_populates='muscle_group')
 
     def __repr__(self):
-        return f'<MuscleGroup {self.name}>'
+        return f'MuscleGroup(id={self.id}, name="{self.name}")'
 
 class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     muscle_group_id = db.Column(db.Integer, db.ForeignKey('muscle_group.id'), nullable=False)
-    description = db.Column(db.Text, nullable=True)
+
     muscle_group = db.relationship('MuscleGroup', back_populates='exercises',  )
     workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise')
     goals = db.relationship('Goal', back_populates='exercise',  )
 
     def __repr__(self):
-        return f'<Exercise {self.name}>'
+        return f'Exercise(id={self.id}, name="{self.name}")'
 
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=True)
     name = db.Column(db.String(100), nullable=False)
     target_weight = db.Column(db.Float, nullable=True)
     target_reps = db.Column(db.Integer, nullable=True)
@@ -84,7 +82,7 @@ class WorkoutMuscleGroup(db.Model):
     muscle_group = db.relationship('MuscleGroup', back_populates='workout_muscle_groups') 
 
     def __repr__(self):
-        return f'<WorkoutMuscleGroup Workout ID: {self.workout_id}, MuscleGroup ID: {self.muscle_group_id}>'
+        return f'WorkoutMuscleGroup(workout_id={self.workout_id}, muscle_group_id={self.muscle_group_id})'
 
 
 # Table between workouts and exercises
@@ -99,4 +97,4 @@ class WorkoutExercise (db.Model):
     exercise = db.relationship('Exercise', back_populates='workout_exercises') 
 
     def __repr__(self):
-        return f'<WorkoutExercise Workout ID: {self.workout_id}, Exercise ID: {self.exercise_id}>'
+        return f'WorkoutExercise(workout_id={self.workout_id}, exercise_id={self.exercise_id})'
