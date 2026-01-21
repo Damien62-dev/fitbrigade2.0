@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Workout - FitBrigade 2.0{% endblock %}
+
+{% block content %}
+<h2>Edit Workout</h2>
+<br>
+<form method="POST" action="/edit_workout/{{ workout.id }}" id="workoutForm">
+    <label for="name">Workout Name</label>
+    <input type="text" id="name" name="name" required placeholder="e.g., Leg Day" value="{{ workout.name }}">
+    <br><br>
+
+    <label for="date">Date</label>
+    <input type="date" id="date" name="date" required value="{{ workout.date }}">
+    <br><br>
+
+    <fieldset>
+        <legend>Select Muscle Groups</legend>
+        <div class="muscle-grid">
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Quadriceps"
+                    onchange="toggleExercises('Quadriceps', event)" {% if 'Quadriceps' in selected_muscle_names
+                    %}checked{% endif %}>
+                Quadriceps
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Glutes" onchange="toggleExercises('Glutes', event)"
+                    {% if 'Glutes' in selected_muscle_names %}checked{% endif %}>
+                Glutes
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Back" onchange="toggleExercises('Back', event)" {%
+                    if 'Back' in selected_muscle_names %}checked{% endif %}>
+                Back
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Chest" onchange="toggleExercises('Chest', event)" {%
+                    if 'Chest' in selected_muscle_names %}checked{% endif %}>
+                Chest
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Shoulders"
+                    onchange="toggleExercises('Shoulders', event)" {% if 'Shoulders' in selected_muscle_names
+                    %}checked{% endif %}>
+                Shoulders
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Traps" onchange="toggleExercises('Traps', event)" {%
+                    if 'Traps' in selected_muscle_names %}checked{% endif %}>
+                Traps
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Hamstrings"
+                    onchange="toggleExercises('Hamstrings', event)" {% if 'Hamstrings' in selected_muscle_names
+                    %}checked{% endif %}>
+                Hamstrings
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Biceps" onchange="toggleExercises('Biceps', event)"
+                    {% if 'Biceps' in selected_muscle_names %}checked{% endif %}>
+                Biceps
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Triceps" onchange="toggleExercises('Triceps', event)"
+                    {% if 'Triceps' in selected_muscle_names %}checked{% endif %}>
+                Triceps
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Forearms"
+                    onchange="toggleExercises('Forearms', event)" {% if 'Forearms' in selected_muscle_names %}checked{%
+                    endif %}>
+                Forearms
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Calves" onchange="toggleExercises('Calves', event)"
+                    {% if 'Calves' in selected_muscle_names %}checked{% endif %}>
+                Calves
+            </label>
+            <label>
+                <input type="checkbox" name="muscle_groups" value="Abs" onchange="toggleExercises('Abs', event)" {%
+                    if 'Abs' in selected_muscle_names %}checked{% endif %}>
+                Abs
+            </label>
+        </div>
+        <p id="muscleCount">{{ selected_muscle_names|length }} muscle group{% if selected_muscle_names|length != 1 %}s{%
+            endif %} selected</p>
+    </fieldset>
+    <br>
+
+    {% for muscle, exercise_list in all_exercises.items() %}
+    <div id="exercises_{{ muscle }}" class="exercise-section"
+        style="display: {% if muscle in selected_muscle_names %}block{% else %}none{% endif %};">
+        <fieldset>
+            <legend>Select Exercises for {{ muscle }}</legend>
+            <div class="exercise-list-detailed">
+                {% for exercise in exercise_list %}
+                {% set is_selected = muscle in selected_exercises and exercise.name in (selected_exercises[muscle] |
+                map(attribute='name') | list) %}
+                {% set exercise_data = selected_exercises.get(muscle, []) | selectattr('name', 'equalto', exercise.name)
+                | first %}
+
+                <div class="exercise-item">
+                    <label class="exercise-checkbox">
+                        <input type="checkbox" name="exercises_{{ muscle }}" value="{{ exercise.name }}"
+                            onchange="toggleExerciseDetails('{{ muscle }}', '{{ exercise.name }}', event)" {% if
+                            is_selected %}checked{% endif %}>
+                        <strong>{{ exercise.name }}</strong>
+                    </label>
+                    <div id="details_{{ muscle }}_{{ exercise.name }}" class="exercise-details"
+                        style="display: {% if is_selected %}flex{% else %}none{% endif %};">
+                        <label for="sets_{{ muscle }}_{{ exercise.name }}">Sets:</label>
+                        <select name="sets_{{ muscle }}_{{ exercise.name }}" id="sets_{{ muscle }}_{{ exercise.name }}">
+                            <option value="1" {% if exercise_data and exercise_data.sets==1 %}selected{% endif %}>1
+                            </option>
+                            <option value="2" {% if exercise_data and exercise_data.sets==2 %}selected{% endif %}>2
+                            </option>
+                            <option value="3" {% if exercise_data and exercise_data.sets==3 %}selected{% elif not
+                                exercise_data %}selected{% endif %}>3</option>
+                            <option value="4" {% if exercise_data and exercise_data.sets==4 %}selected{% endif %}>4
+                            </option>
+                            <option value="5" {% if exercise_data and exercise_data.sets==5 %}selected{% endif %}>5
+                            </option>
+                        </select>
+
+                        <label for="reps_{{ muscle }}_{{ exercise.name }}">Reps:</label>
+                        <select name="reps_{{ muscle }}_{{ exercise.name }}" id="reps_{{ muscle }}_{{ exercise.name }}">
+                            <option value="1-3" {% if exercise_data and exercise_data.reps=='1-3' %}selected{% endif %}>
+                                1-3</option>
+                            <option value="4-6" {% if exercise_data and exercise_data.reps=='4-6' %}selected{% endif %}>
+                                4-6</option>
+                            <option value="6-8" {% if exercise_data and exercise_data.reps=='6-8' %}selected{% endif %}>
+                                6-8</option>
+                            <option value="8-10" {% if exercise_data and exercise_data.reps=='8-10' %}selected{% elif
+                                not exercise_data %}selected{% endif %}>8-10</option>
+                            <option value="10-12" {% if exercise_data and exercise_data.reps=='10-12' %}selected{% endif
+                                %}>10-12</option>
+                            <option value="12-15" {% if exercise_data and exercise_data.reps=='12-15' %}selected{% endif
+                                %}>12-15</option>
+                            <option value="15-20" {% if exercise_data and exercise_data.reps=='15-20' %}selected{% endif
+                                %}>15-20</option>
+                            <option value="20+" {% if exercise_data and exercise_data.reps=='20+' %}selected{% endif %}>
+                                20+</option>
+                        </select>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <br>
+    </div>
+    {% endfor %}
+
+    <label for="notes">Notes (optional)</label><br>
+    <textarea id="notes" name="notes" rows="4"
+        placeholder="Add any notes about this workout...">{{ workout.notes if workout.notes else '' }}</textarea>
+    <br><br>
+
+    <div style="display: flex; gap: 10px;">
+        <a href="/workout/{{ workout.id }}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </div>
+</form>
+{% endblock %}

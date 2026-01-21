@@ -290,6 +290,68 @@ def goal_detail(goal_id):
     goal = Goal.query.get_or_404(goal_id)
     return render_template('goal_detail.html', goal=goal)
 
+# Routes à ajouter dans app.py pour l'édition des Goals
+
+@app.route('/edit_goal/<int:goal_id>', methods=['GET'])
+def edit_goal_form(goal_id):
+    """Affiche le formulaire d'édition d'un goal"""
+    goal = Goal.query.get_or_404(goal_id)
+    muscle_groups = MuscleGroup.query.all()
+    
+    # Get exercises grouped by muscle group
+    exercises_by_muscle = {}
+    for mg in muscle_groups:
+        exercises_by_muscle[mg.name] = Exercise.query.filter_by(muscle_group_id=mg.id).all()
+    
+    return render_template('edit_goal.html', 
+                         goal=goal,
+                         muscle_groups=muscle_groups,
+                         all_exercises=exercises_by_muscle)
+
+
+@app.route('/edit_goal/<int:goal_id>', methods=['POST'])
+def edit_goal(goal_id):
+    """Traite la modification d'un goal"""
+    goal = Goal.query.get_or_404(goal_id)
+    
+    # Update basic info
+    goal.name = request.form['name'].strip()
+    
+    # Update deadline
+    deadline_str = request.form.get('deadline', '').strip()
+    if deadline_str:
+        goal.deadline = datetime.strptime(deadline_str, '%Y-%m-%d').date()
+    else:
+        goal.deadline = None
+    
+    # Update exercise
+    exercise_id = request.form.get('exercise', '').strip()
+    if exercise_id:
+        goal.exercise_id = int(exercise_id)
+    else:
+        goal.exercise_id = None
+    
+    # Update targets
+    target_weight = request.form.get('target_weight', '').strip()
+    if target_weight:
+        goal.target_weight = float(target_weight)
+    else:
+        goal.target_weight = None
+    
+    target_reps = request.form.get('target_reps', '').strip()
+    if target_reps:
+        goal.target_reps = int(target_reps)
+    else:
+        goal.target_reps = None
+    
+    # Update notes
+    goal.notes = request.form.get('notes', '').strip()
+    
+    # Save to database
+    db.session.commit()
+    
+    return redirect(url_for('goal_detail', goal_id=goal.id))
+
 
 @app.route('/delete_goal/<int:goal_id>')
 def delete_goal(goal_id):
@@ -371,6 +433,83 @@ def create_workout():
     
     
     return redirect(url_for('workouts'))
+
+# ========== EDIT WORKOUT - Routes ==========
+
+@app.route('/edit_workout/<int:workout_id>', methods=['GET'])
+def edit_workout_form(workout_id):
+    """Display the edit workout form with pre-filled data"""
+    workout = Workout.query.get_or_404(workout_id)
+    muscle_groups = MuscleGroup.query.all()
+    
+    # Get exercises grouped by muscle group
+    exercises_by_muscle = {}
+    for mg in muscle_groups:
+        exercises_by_muscle[mg.name] = Exercise.query.filter_by(muscle_group_id=mg.id).all()
+    
+    workout_muscle_groups = get_workout_muscle_groups(workout_id)
+    workout_exercises = get_workout_exercises(workout_id)
+    
+    selected_muscle_names = {mg.name for mg in workout_muscle_groups}
+
+    selected_exercises = {}
+    for we in workout_exercises:
+        muscle_name = we.exercise.muscle_group.name
+        if muscle_name not in selected_exercises:
+            selected_exercises[muscle_name] = []
+        selected_exercises[muscle_name].append({
+            'name': we.exercise.name,
+            'sets': we.sets,
+            'reps': we.reps
+        })
+    
+    return render_template('edit_workout.html',
+                         workout=workout,
+                         muscle_groups=muscle_groups,
+                         all_exercises=exercises_by_muscle,
+                         selected_muscle_names=selected_muscle_names,
+                         selected_exercises=selected_exercises)
+
+@app.route('/edit_workout/<int:workout_id>', methods=['POST'])
+def edit_workout(workout_id):
+    """Update an existing workout"""
+    workout = Workout.query.get_or_404(workout_id)
+    
+    workout.name = request.form['name'].strip()
+    workout.date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+    workout.notes = request.form.get('notes', '').strip() or None
+    
+    WorkoutMuscleGroup.query.filter_by(workout_id=workout_id).delete()
+    WorkoutExercise.query.filter_by(workout_id=workout_id).delete()
+    
+    selected_muscles = request.form.getlist('muscle_groups')
+    for muscle_name in selected_muscles:
+        muscle_group = MuscleGroup.query.filter_by(name=muscle_name).first()
+        if muscle_group:
+            wm = WorkoutMuscleGroup(workout_id=workout.id, muscle_group_id=muscle_group.id)
+            db.session.add(wm)
+    
+    for muscle_name in selected_muscles:
+        selected_exercises = request.form.getlist(f'exercises_{muscle_name}')
+        
+        for exercise_name in selected_exercises:
+            exercise = Exercise.query.filter_by(name=exercise_name).first()
+            if exercise:
+                sets = request.form.get(f'sets_{muscle_name}_{exercise_name}', '3')
+                reps = request.form.get(f'reps_{muscle_name}_{exercise_name}', '8-10')
+                
+                we = WorkoutExercise(
+                    workout_id=workout.id,
+                    exercise_id=exercise.id,
+                    sets=int(sets),
+                    reps=reps
+                )
+                db.session.add(we)
+    
+    db.session.commit()
+    
+    return redirect(url_for('workout_detail', workout_id=workout_id))
+
 
 
 @app.route('/delete/<int:workout_id>')

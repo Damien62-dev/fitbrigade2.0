@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ workout.name }} - FitBrigade{% endblock %}
+{% block title %}{{ workout.name }} - FitBrigade 2.0{% endblock %}
 
 {% block content %}
 <a href="/workouts" class="back-link">← Back to Workouts</a>
@@ -51,6 +51,7 @@
 
     <div class="detail-actions">
         <a href="/workouts" class="btn-secondary">Back to Workouts</a>
+        <a href="/edit_workout/{{ workout.id }}" class="btn-primary">Edit Workout</a>
         <a href="/delete/{{ workout.id }}" class="btn-danger">Delete Workout</a>
     </div>
 </div>

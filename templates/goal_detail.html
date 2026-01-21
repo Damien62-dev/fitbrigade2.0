@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ goal.name }} - FitBrigade{% endblock %}
+{% block title %}{{ goal.name }} - FitBrigade 2.0{% endblock %}
 
 {% block content %}
 <a href="/goals" class="back-link">← Back to Goals</a>
@@ -40,6 +40,7 @@
 
     <div class="detail-actions">
         <a href="/goals" class="btn-secondary">Back to Goals</a>
+        <a href="/edit_goal/{{ goal.id }}" class="btn-primary">Edit Goal</a>
         <a href="/delete_goal/{{ goal.id }}" class="btn-danger">Delete Goal</a>
     </div>
 </div>
