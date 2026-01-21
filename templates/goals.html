@@ -16,7 +16,9 @@
         <h3>{{ goal.name }}</h3>
         <p class="date">Deadline: {{ goal.deadline if goal.deadline else 'No deadline' }}</p>
         <div class="muscle-tags">
+            {% if goal.exercise %}
             <span class="tag">{{ goal.exercise.name }}</span>
+            {% endif %}
             {% if goal.target_weight %}
             <span class="tag">{{ goal.target_weight }}kg</span>
             {% endif %}

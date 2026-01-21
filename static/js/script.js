@@ -77,9 +77,8 @@ const deleteGoalLinks = document.querySelectorAll('a[href*="/delete_goal/"]');
 
 deleteGoalLinks.forEach(link => {
     link.addEventListener('click', function (event) {
-        if (!confirm('Are you sure you want to delete this goal? This action cannot be undone.')) {
+        if (!confirm('Are you sure you want to complete this goal? This action cannot be undone.')) {
             event.preventDefault();
         }
     });
 });
-
