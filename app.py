@@ -12,8 +12,15 @@ db.init_app(app)
 
 def seed_db_if_needed():
     """
-    Populate the database with initial data
-    ONLY if it's empty.
+    Populate the database with initial data if empty.
+    
+    Creates:
+        - Demo user (id=1)
+        - 12 muscle groups (Quadriceps, Glutes, Back, Chest, Shoulders, Traps, Hamstrings, Biceps, Triceps, Forearms, Calves, Abs)
+        - 70+ exercises organized by muscle group
+        
+    Note:
+        This function is idempotent - only runs if database is empty.
     """
     if User.query.count() > 0:
         return  # already seeded
@@ -153,24 +160,57 @@ with app.app_context():
 # Helper functions
 
 def get_demo_user():
-    """Get the demo user (always user_id = 1)"""
+    """
+    Retrieve the demo user (always user_id = 1).
+    
+    Returns:
+        User: The demo user object
+        
+    Note:
+        This is temporary for single-user demo mode.
+        In production, implement proper authentication.
+    """
     return User.query.get(1)
 
 
 def get_user_workouts(user_id):
-    """Get all workouts for a specific user"""
+    """
+    Retrieve all workouts for a specific user.
+    
+    Args:
+        user_id (int): The ID of the user
+        
+    Returns:
+        list[Workout]: List of workout objects
+    """
     workouts = Workout.query.filter_by(user_id=user_id).all()
     return workouts
 
 
 def get_workout_exercises(workout_id):
-    """Get all exercises for a specific workout"""
+    """
+    Retrieve all exercises associated with a workout.
+    
+    Args:
+        workout_id (int): The ID of the workout
+        
+    Returns:
+        list[WorkoutExercise]: List of workout-exercise associations
+    """
     workout_exercises = WorkoutExercise.query.filter_by(workout_id=workout_id).all()
     return workout_exercises
 
 
 def get_workout_muscle_groups(workout_id):
-    """Get all muscle groups for a specific workout"""
+    """
+    Retrieve all muscle groups targeted in a workout.
+    
+    Args:
+        workout_id (int): The ID of the workout
+        
+    Returns:
+        list[MuscleGroup]: List of muscle group objects
+    """
     links = WorkoutMuscleGroup.query.filter_by(workout_id=workout_id).all()
     result = []
     for link in links:
@@ -290,11 +330,17 @@ def goal_detail(goal_id):
     goal = Goal.query.get_or_404(goal_id)
     return render_template('goal_detail.html', goal=goal)
 
-# Routes à ajouter dans app.py pour l'édition des Goals
-
 @app.route('/edit_goal/<int:goal_id>', methods=['GET'])
 def edit_goal_form(goal_id):
-    """Affiche le formulaire d'édition d'un goal"""
+    """
+    Display the edit goal form with pre-filled data.
+    
+    Args:
+        goal_id (int): The ID of the goal to edit
+        
+    Returns:
+        Rendered template: edit_goal.html with goal data
+    """
     goal = Goal.query.get_or_404(goal_id)
     muscle_groups = MuscleGroup.query.all()
     
@@ -311,7 +357,15 @@ def edit_goal_form(goal_id):
 
 @app.route('/edit_goal/<int:goal_id>', methods=['POST'])
 def edit_goal(goal_id):
-    """Traite la modification d'un goal"""
+    """
+    Update an existing goal with form data.
+    
+    Args:
+        goal_id (int): The ID of the goal to update
+        
+    Returns:
+        Redirect to goal detail page
+    """
     goal = Goal.query.get_or_404(goal_id)
     
     # Update basic info
@@ -401,19 +455,7 @@ def create_workout():
     # Add exercises to workout
     for muscle_name in selected_muscles:
         selected_exercises = request.form.getlist(f'exercises_{muscle_name}')
-
-        # DEBUG
-        print(f"Selected exercises for {muscle_name}: {selected_exercises}")
     
-    for exercise_name in selected_exercises:
-
-
-        # DEBUG: Afficher TOUS les champs du formulaire
-        print("=== FORM DATA ===")
-        for key, value in request.form.items():
-            print(f"{key}: {value}")
-        print("=================")
-        
         for exercise_name in selected_exercises:
             exercise = Exercise.query.filter_by(name=exercise_name).first()
             if exercise:
@@ -434,11 +476,17 @@ def create_workout():
     
     return redirect(url_for('workouts'))
 
-# ========== EDIT WORKOUT - Routes ==========
-
 @app.route('/edit_workout/<int:workout_id>', methods=['GET'])
 def edit_workout_form(workout_id):
-    """Display the edit workout form with pre-filled data"""
+    """
+    Display the edit workout form with pre-filled data.
+    
+    Args:
+        workout_id (int): The ID of the workout to edit
+        
+    Returns:
+        Rendered template: edit_workout.html with workout data
+    """
     workout = Workout.query.get_or_404(workout_id)
     muscle_groups = MuscleGroup.query.all()
     
@@ -472,7 +520,15 @@ def edit_workout_form(workout_id):
 
 @app.route('/edit_workout/<int:workout_id>', methods=['POST'])
 def edit_workout(workout_id):
-    """Update an existing workout"""
+    """
+    Update an existing workout with form data.
+    
+    Args:
+        workout_id (int): The ID of the workout to update
+        
+    Returns:
+        Redirect to workout detail page
+    """
     workout = Workout.query.get_or_404(workout_id)
     
     workout.name = request.form['name'].strip()
