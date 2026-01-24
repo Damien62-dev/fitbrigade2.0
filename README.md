@@ -4,7 +4,7 @@ A workout and fitness goal tracking web application built with Flask and Postgre
 
 ## 🔗 Links
 
-- **Live Demo:** TBC
+- **Live Demo:** https://fitbrigade2-0.onrender.com
 - **GitHub Repository:** https://github.com/Damien62-dev/fitbrigade2.0
 
 ## About

@@ -3,8 +3,8 @@
 ## Project Information
 - **Student Name:** Damien Mullet
 - **Project Name:** FitBrigade - Workout Tracking Web Application
-- **Live URL:** TBC
-- **GitHub Repository:** [Your GitHub URL]
+- **Live URL:** https://fitbrigade2-0.onrender.com
+- **GitHub Repository:** https://github.com/Damien62-dev/fitbrigade2.0
 
 ---
 
@@ -149,44 +149,45 @@ Fill in the following settings:
 #### 5. Access Your Live Application
 
 Once deployment is complete:
-- Render will provide you with a URL like: `https://fitbrigade.onrender.com`
+- Render will provide you with a URL like: `https://fitbrigade2-0.onrender.com`
 - Click on the URL to access your live application
 - Test all features to ensure everything works correctly
 
 ---
 
 ## Project Structure
-
 ```
+
 FitBrigade/
-├── app.py                      # Main Flask application
+├── app.py                      # Main Flask application with routes
+├── models.py                   # SQLAlchemy database models
+├── config.py                   # Configuration settings
 ├── requirements.txt            # Python dependencies
-├── workouts.json              # JSON data storage
-├── README.md                  # Project documentation
-├── DEPLOYMENT_INSTRUCTIONS.md # This file
-├── .gitignore                 # Git ignore file
+├── README.md                   # Project documentation
+├── DEPLOYMENT_INSTRUCTIONS.md  # This file
+├── .gitignore                  # Git ignore file
 │
 ├── static/
 │   ├── css/
-│   │   └── style.css         # Custom CSS styling
-│   ├── images/               # Image assets
-│   │   ├── hero-bg.jpg
-│   │   ├── plan.jpg
-│   │   ├── track.jpg
-│   │   └── stats.jpg
+│   │   └── style.css          # Custom styling
+│   ├── images/                # Image assets
 │   └── js/
-│       └── script.js         # JavaScript for interactivity
+│       └── script.js          # Client-side interactivity
 │
 └── templates/
-    ├── base.html             # Base template (layout)
-    ├── index.html            # Homepage
-    ├── create.html           # Create workout form
-    ├── workouts.html         # All workouts list
-    ├── workout_detail.html   # Individual workout view
-    ├── stats.html            # Statistics page
-    └── about.html            # About page
+    ├── base.html              # Base template
+    ├── index.html             # Homepage
+    ├── create_workout.html    # Create workout form
+    ├── edit_workout.html      # Edit workout form
+    ├── workouts.html          # Workout list
+    ├── workout_detail.html    # Workout details
+    ├── create_goal.html       # Create goal form
+    ├── edit_goal.html         # Edit goal form
+    ├── goals.html             # Goal list
+    ├── goal_detail.html       # Goal details
+    ├── stats.html             # Statistics page
+    └── about.html             # About page
 ```
-
 ---
 
 ## Technologies Used
@@ -194,6 +195,8 @@ FitBrigade/
 ### Backend
 - **Python 3.x** - Programming language
 - **Flask 3.1.2** - Web framework
+- **SQLAlchemy 2.0.45** - ORM for database management
+- **PostgreSQL** - Production database
 - **Gunicorn 22.0.0** - Production WSGI server
 
 ### Frontend
@@ -209,7 +212,8 @@ FitBrigade/
   - Exercise selection logic
 
 ### Data Storage
-- **JSON** - Simple file-based data persistence
+- **PostgreSQL** - Relational database
+- **SQLAlchemy ORM** - Database abstraction layer
 
 ### Fonts
 - **Google Fonts:**
@@ -238,66 +242,45 @@ FitBrigade/
    - View detailed workout information
    - See exercise tables organized by muscle group
 
-3. **Update** (Implicit)
-   - Data persistence through JSON
-   - Workout information maintained across sessions
+3. **Update Workouts**
+   - Edit existing workouts
+   - Modify exercises, sets, and reps
 
 4. **Delete Workouts**
    - Remove unwanted workouts
    - Automatic data cleanup
 
+5. **Create & Track Goals**
+   - Set strength and performance goals
+   - Link goals to specific exercises
+   - Define target weight and reps
+   - Set optional deadlines
+   - Track progress towards objectives
+
+6. **Edit Goals**
+   - Modify existing goals
+   - Update targets and deadlines
+   - Adjust goal parameters
+
 ### Additional Features
 
-5. **Statistics Dashboard**
+7. **Statistics Dashboard**
    - Total workout count
    - Most trained muscle groups
    - Least trained muscle groups
    - Detailed frequency breakdown
 
-6. **Responsive Design**
+8. **Responsive Design**
    - Mobile-friendly interface
    - Burger menu for mobile navigation
    - Responsive grids and layouts
    - Touch-friendly buttons
 
-7. **User Experience**
+9. **User Experience**
    - Clean, modern interface
    - Smooth animations and transitions
    - Interactive form elements
    - Visual feedback on interactions
-
----
-
-## Data Structures Used
-
-### 1. Dictionary - Exercise Database
-```python
-EXERCISES = {
-    "Quadriceps": ["Back Squat", "Front Squat", ...],
-    "Glutes": ["Hip Thrust", "Romanian Deadlift", ...],
-    # ... more muscle groups
-}
-```
-
-### 2. List - Workout Storage
-```python
-workouts = [
-    {
-        "id": 1,
-        "name": "Leg Day",
-        "date": "2024-11-22",
-        "muscle_groups": ["Quadriceps", "Glutes"],
-        "exercises": {...},
-        "notes": "Great workout!"
-    }
-]
-```
-
-### 3. Custom Data Processing
-- JSON file reading/writing
-- Dynamic ID generation
-- Muscle group frequency counting
-- Statistical calculations
 
 ---
 
@@ -346,9 +329,6 @@ Before considering the deployment complete, verify:
 **Issue: Application won't start locally**
 - Solution: Ensure virtual environment is activated and dependencies are installed
 
-**Issue: JSON file not found error**
-- Solution: The `workouts.json` file will be created automatically on first run
-
 **Issue: Render deployment fails**
 - Solution: Check that `requirements.txt` includes all dependencies
 - Solution: Verify `gunicorn` is in requirements.txt
@@ -368,17 +348,9 @@ Before considering the deployment complete, verify:
 
 Potential improvements for future versions:
 - User authentication system
-- Database integration (PostgreSQL)
-- Workout editing functionality
 - Exercise history tracking
-- Progress charts and graphs
-- Export workouts to PDF
-- Share workouts with friends
-- Exercise video tutorials
-- Rest timer functionality
 
 ---
-
 ## Notes for Grading
 
 ### Assignment Requirements Met
@@ -427,7 +399,7 @@ Potential improvements for future versions:
 
 ✅ **Render.com Hosting**
 - Successfully deployed to Render
-- Live URL: https://fitbrigade.onrender.com/
+- Live URL: https://fitbrigade2-0.onrender.com
 - Application accessible and functional
 
 ### Code Quality
@@ -445,7 +417,7 @@ Potential improvements for future versions:
 **Student:** Damien Mullet  
 **Course:** Full Stack Developer Professional Diploma  
 **Institution:** UCD Professional Academy  
-**Submission Date:** November 29, 2024
+**Submission Date:** January 24, 2026
 
 ---
 
