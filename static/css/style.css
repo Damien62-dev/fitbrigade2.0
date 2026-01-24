@@ -748,31 +748,18 @@ footer p {
     nav ul,
     .mobile-menu {
         position: fixed;
-        /* Fixed positioning */
         right: -100%;
-        /* Hidden off-screen to the right */
         top: 70px;
-        /* Below the nav bar */
         flex-direction: column;
-        /* Stacks items vertically */
         background-color: #1a1a1a;
-        /* Dark background */
         width: 100%;
-        /* Full width */
         text-align: center;
-        /* Centers text */
         transition: right 0.3s ease;
-        /* Smooth slide animation */
         box-shadow: 0 10px 27px rgba(0, 0, 0, 0.8);
-        /* Shadow */
         z-index: 999;
-        /* High stacking order */
         list-style: none;
-        /* No list bullets */
         padding: 0;
-        /* No padding */
         margin: 0;
-        /* No margin */
     }
 
     /* Menu shown when active */
@@ -790,7 +777,6 @@ footer p {
     /* Navigation links full width and centered */
     nav ul a {
         width: 100%;
-        /* Full width */
         padding: 20px;
         display: block;
     }
@@ -828,5 +814,53 @@ footer p {
     .exercise-item {
         padding: 10px;
         max-width: calc(100vw - 40px);
+    }
+
+    /* FIX: Boutons empilés sur mobile */
+    .detail-actions,
+    .card-actions {
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+    }
+
+    .detail-actions a,
+    .detail-actions button,
+    .card-actions a,
+    .card-actions button {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+    /* FIX: Cartes sur mobile - padding réduit */
+    .detail-card,
+    .workout-card {
+        padding: 15px;
+    }
+
+    /* responsive form padding */
+    form {
+        padding: 20px;
+    }
+
+    /* FIX: Boutons dans les forms */
+    form>div[style*="display: flex"] {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 10px;
+    }
+
+    form>div[style*="display: flex"] a,
+    form>div[style*="display: flex"] button {
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    /* FIX: Container général sur mobile */
+    .container {
+        padding: 0 10px;
     }
 }
